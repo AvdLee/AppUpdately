@@ -35,6 +35,27 @@ final class UpdateStatusFetcherTests: XCTestCase {
         mock(currentVersion: "1.0.0", latestVersion: "2.0.0")
         XCTAssertStatusEquals(.updateAvailable(version: "2.0.0", storeURL: mockedTrackViewURL))
     }
+
+    @available(macOS 12.0, *)
+    func testSameVersionAsync() async throws {
+        mock(currentVersion: "2.0.0", latestVersion: "2.0.0")
+        let status = try await fetcher.fetch()
+        XCTAssertEqual(status, .upToDate)
+    }
+
+    @available(macOS 12.0, *)
+    func testNewerVersionAsync() async throws {
+        mock(currentVersion: "3.0.0", latestVersion: "2.0.0")
+        let status = try await fetcher.fetch()
+        XCTAssertEqual(status, .upToDate)
+    }
+
+    @available(macOS 12.0, *)
+    func testOlderVersionAsync() async throws {
+        mock(currentVersion: "1.0.0", latestVersion: "2.0.0")
+        let status = try await fetcher.fetch()
+        XCTAssertEqual(status, .updateAvailable(version: "2.0.0", storeURL: mockedTrackViewURL))
+    }
 }
 
 extension UpdateStatusFetcherTests {

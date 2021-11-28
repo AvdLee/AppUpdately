@@ -45,13 +45,12 @@ public struct UpdateStatusFetcher {
             .dataTaskPublisher(for: url)
             .map(\.data)
             .decode(type: AppMetadataResults.self, decoder: decoder)
-            .tryMap({ metadataResults -> AppMetadata in
+            .tryMap({ metadataResults -> Status in
                 guard let appMetadata = metadataResults.results.first else {
                     throw FetchError.metadata
                 }
-                return appMetadata
+                return try updateStatus(for: appMetadata)
             })
-            .convertToUpdateStatus(currentVersion: currentVersionProvider())
             .sink { completionStatus in
                 switch completionStatus {
                 case .failure(let error):
@@ -64,23 +63,28 @@ public struct UpdateStatusFetcher {
                 print("Update status is \(status)")
                 completion(.success(status))
             }
-
     }
-}
 
-extension Publisher where Output == AppMetadata, Failure == Swift.Error {
-    func convertToUpdateStatus(currentVersion: String?) -> AnyPublisher<UpdateStatusFetcher.Status, Failure> {
-        tryMap { appMetadata -> UpdateStatusFetcher.Status in
-            guard let currentVersion = currentVersion else {
-                throw UpdateStatusFetcher.FetchError.bundleShortVersion
-            }
+    @available(macOS 12.0, *)
+    func fetch() async throws -> Status {
+        let data = try await urlSession.data(from: url).0
+        let metadataResults = try decoder.decode(AppMetadataResults.self, from: data)
+        guard let appMetadata = metadataResults.results.first else {
+            throw FetchError.metadata
+        }
+        return try updateStatus(for: appMetadata)
+    }
 
-            switch currentVersion.compare(appMetadata.version) {
-            case .orderedSame, .orderedDescending:
-                return UpdateStatusFetcher.Status.upToDate
-            case .orderedAscending:
-                return UpdateStatusFetcher.Status.updateAvailable(version: appMetadata.version, storeURL: appMetadata.trackViewUrl)
-            }
-        }.eraseToAnyPublisher()
+    func updateStatus(for appMetadata: AppMetadata) throws -> Status {
+        guard let currentVersion = currentVersionProvider() else {
+            throw UpdateStatusFetcher.FetchError.bundleShortVersion
+        }
+
+        switch currentVersion.compare(appMetadata.version) {
+        case .orderedSame, .orderedDescending:
+            return UpdateStatusFetcher.Status.upToDate
+        case .orderedAscending:
+            return UpdateStatusFetcher.Status.updateAvailable(version: appMetadata.version, storeURL: appMetadata.trackViewUrl)
+        }
     }
 }
