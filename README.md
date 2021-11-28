@@ -35,6 +35,7 @@ Task {
         // Use the information to present your update alert or view.
     }
 }
+```
 
 ## Installation
 ### Swift Package Manager
