@@ -20,3 +20,39 @@ cancellable = UpdateStatusFetcher().fetch { result in
     }
 }
 ```
+
+## Installation
+### Swift Package Manager
+
+The [Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code. It’s integrated with the Swift build system to automate the process of downloading, compiling, and linking dependencies.
+
+#### Manifest File
+
+Add AppUpdately as a package to your `Package.swift` file and then specify it as a dependency of the Target in which you wish to use it.
+
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "MyProject",
+    platforms: [
+       .macOS(.v10_15)
+       .iOS(.v13)
+    ],
+    dependencies: [
+        .package(url: "https://github.com/AvdLee/AppUpdately.git", .upToNextMajor(from: "1.0.0"))
+    ],
+    targets: [
+        .target(
+            name: "MyProject",
+            dependencies: ["AppUpdately"]),
+        .testTarget(
+            name: "MyProjectTests",
+            dependencies: ["MyProject"]),
+    ]
+)
+```
+
+## License
+
+AppUpdately is available under the MIT license. See the LICENSE file for more info.
