@@ -34,13 +34,13 @@ public struct UpdateStatusFetcher {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     }
 
-    init(bundleIdentifier: String = Bundle.main.bundleIdentifier!, urlSession: URLSession = .shared) {
+    public init(bundleIdentifier: String = Bundle.main.bundleIdentifier!, urlSession: URLSession = .shared) {
         url = URL(string: "https://itunes.apple.com/br/lookup?bundleId=\(bundleIdentifier)")!
         self.bundleIdentifier = bundleIdentifier
         self.urlSession = urlSession
     }
 
-    func fetch(_ completion: @escaping (Result<Status, Error>) -> Void) -> AnyCancellable {
+    public func fetch(_ completion: @escaping (Result<Status, Error>) -> Void) -> AnyCancellable {
         urlSession
             .dataTaskPublisher(for: url)
             .map(\.data)
@@ -66,7 +66,7 @@ public struct UpdateStatusFetcher {
     }
 
     @available(macOS 12.0, *)
-    func fetch() async throws -> Status {
+    public func fetch() async throws -> Status {
         let data = try await urlSession.data(from: url).0
         let metadataResults = try decoder.decode(AppMetadataResults.self, from: data)
         guard let appMetadata = metadataResults.results.first else {
@@ -75,7 +75,7 @@ public struct UpdateStatusFetcher {
         return try updateStatus(for: appMetadata)
     }
 
-    func updateStatus(for appMetadata: AppMetadata) throws -> Status {
+    private func updateStatus(for appMetadata: AppMetadata) throws -> Status {
         guard let currentVersion = currentVersionProvider() else {
             throw UpdateStatusFetcher.FetchError.bundleShortVersion
         }
