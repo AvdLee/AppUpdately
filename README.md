@@ -40,7 +40,7 @@ Task {
 ## Installation
 ### Swift Package Manager
 
-Add the following URL: `https://github.com/AvdLee/AppUpdately.git`.
+Add `https://github.com/AvdLee/AppUpdately.git` within Xcode's package manager.
 
 #### Manifest File
 
