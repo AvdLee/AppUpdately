@@ -21,6 +21,21 @@ cancellable = UpdateStatusFetcher().fetch { result in
 }
 ```
 
+Or with [async/await](https://www.avanderlee.com/swift/async-await/):
+
+```swift
+Task {
+    let fetcher = UpdateStatusFetcher()
+    let status = try await fetcher.fetch()
+    
+    switch status {
+    case .upToDate:
+        break
+    case .updateAvailable(let version, let storeURL):
+        // Use the information to present your update alert or view.
+    }
+}
+
 ## Installation
 ### Swift Package Manager
 
