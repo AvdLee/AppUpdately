@@ -40,7 +40,7 @@ Task {
 ## Installation
 ### Swift Package Manager
 
-The [Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code. It’s integrated with the Swift build system to automate the process of downloading, compiling, and linking dependencies.
+Add the following URL: `https://github.com/AvdLee/AppUpdately.git`.
 
 #### Manifest File
 
