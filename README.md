@@ -2,6 +2,8 @@
 
 Fetch the update status for a given app bundle identifier, without the need of any remote configuration. Simply provide your app's bundle identifier and compare the resulting update status.
 
+Supports macOS and iOS.
+
 ## Usage
 
 The fetcher automatically fetches the bundle identifier. You can use the following code example:

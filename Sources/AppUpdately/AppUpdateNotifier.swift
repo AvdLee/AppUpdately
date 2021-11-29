@@ -23,7 +23,6 @@ public final class AppUpdateNotifier: ObservableObject {
     public private(set) var lastStatus: UpdateStatusFetcher.Status = .upToDate
 
     private let userDefaults: UserDefaults
-    private let updatePresenter: AppUpdatePresenter
 
     /// The last time a fetch was made.
     private var lastFetch: Date?
@@ -41,9 +40,8 @@ public final class AppUpdateNotifier: ObservableObject {
     private lazy var fetcher: UpdateStatusFetcher = UpdateStatusFetcher()
     private var cancellable: AnyCancellable?
 
-    public init(userDefaults: UserDefaults, updatePresenter: AppUpdatePresenter) {
+    public init(userDefaults: UserDefaults) {
         self.userDefaults = userDefaults
-        self.updatePresenter = updatePresenter
     }
 
     public func updateStatusIfNeeded() {
@@ -56,7 +54,7 @@ public final class AppUpdateNotifier: ObservableObject {
         }
     }
 
-    private func triggerPresenterIfNeeded() {
+    public func triggerPresenterIfNeeded(updatePresenter: AppUpdatePresenter) {
         guard case let UpdateStatusFetcher.Status.updateAvailable(version, storeURL) = lastStatus else {
             return
         }
