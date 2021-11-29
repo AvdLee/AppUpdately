@@ -44,6 +44,7 @@ public final class AppUpdateNotifier: ObservableObject {
         self.userDefaults = userDefaults
     }
 
+    /// Fetches the status if allowed to fetch. Only one fetch per day takes place.
     public func updateStatusIfNeeded() {
         guard allowedToFetch() else { return }
         cancellable = fetcher.fetch { result in
@@ -54,6 +55,7 @@ public final class AppUpdateNotifier: ObservableObject {
         }
     }
 
+    /// Can be used to trigger a presenter if the user didn't see an update view for the available update yet.
     public func triggerPresenterIfNeeded(updatePresenter: AppUpdatePresenter) {
         guard case let UpdateStatusFetcher.Status.updateAvailable(version, storeURL) = lastStatus else {
             return

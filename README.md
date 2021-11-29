@@ -39,6 +39,20 @@ Task {
 }
 ```
 
+### Update notifier
+You can make use of the `AppUpdateNotifier` which takes care of keeping track of seen updates.
+
+```swift
+let updateNotifier = AppUpdateNotifier(userDefaults: standard)
+updateNotifier.updateStatusIfNeeded()
+
+print(updateNotifier.lastStatus) // For example: .upToDate
+```
+
+`AppUpdateNotifier` is an `ObservableObject` and can be used in SwiftUI. `lastStatus` is a published property which can be observed.
+
+You can use `updateNotifier.triggerPresenterIfNeeded(presenter: ...)` to use as a simple trigger for presenting a view in response to an available update.
+
 ## Installation
 ### Swift Package Manager
 
