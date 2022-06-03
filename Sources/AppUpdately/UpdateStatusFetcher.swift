@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import AppKit
 
 /// Fetches the latest update using a lookup and compares it to
 /// the current app version.
@@ -65,6 +64,7 @@ public struct UpdateStatusFetcher {
             }
     }
 
+    @available(iOS 15.0, *)
     @available(macOS 12.0, *)
     public func fetch() async throws -> Status {
         let data = try await urlSession.data(from: url).0
