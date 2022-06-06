@@ -51,7 +51,9 @@ public final class AppUpdateNotifier: ObservableObject {
             guard let status = try? result.get() else {
                 return
             }
-            self.lastStatus = status
+            DispatchQueue.main.async {
+                self.lastStatus = status
+            }
         }
     }
 
