@@ -6,6 +6,8 @@ import Foundation
 /// A status is returned based on comparing both versions.
 public struct UpdateStatusFetcher {
     public enum Status: Equatable {
+        /// The current app version is newer than the latest App Store.
+        case newerVersion
         case upToDate
         case updateAvailable(version: String, storeURL: URL)
     }
@@ -30,7 +32,10 @@ public struct UpdateStatusFetcher {
     private let urlSession: URLSession
 
     var currentVersionProvider: () -> String? = {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        if let debugVersion = ProcessInfo.processInfo.environment["AppUpdatelyDebugVersion"] {
+            return debugVersion
+        }
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     }
 
     public init(bundleIdentifier: String = Bundle.main.bundleIdentifier!, urlSession: URLSession = .shared) {
@@ -81,7 +86,9 @@ public struct UpdateStatusFetcher {
         }
 
         switch currentVersion.compare(appMetadata.version) {
-        case .orderedSame, .orderedDescending:
+        case .orderedDescending:
+            return UpdateStatusFetcher.Status.newerVersion
+        case .orderedSame:
             return UpdateStatusFetcher.Status.upToDate
         case .orderedAscending:
             return UpdateStatusFetcher.Status.updateAvailable(version: appMetadata.version, storeURL: appMetadata.trackViewUrl)

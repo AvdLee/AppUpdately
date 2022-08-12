@@ -18,6 +18,8 @@ public protocol AppUpdatePresenter {
 /// Checks only once per day.
 public final class AppUpdateNotifier: ObservableObject {
 
+    public static let standard = AppUpdateNotifier(userDefaults: .standard)
+
     /// The last known status. Defaults to `upToDate`.
     @Published
     public private(set) var lastStatus: UpdateStatusFetcher.Status = .upToDate
@@ -40,13 +42,14 @@ public final class AppUpdateNotifier: ObservableObject {
     private lazy var fetcher: UpdateStatusFetcher = UpdateStatusFetcher()
     private var cancellable: AnyCancellable?
 
-    public init(userDefaults: UserDefaults) {
+    init(userDefaults: UserDefaults) {
         self.userDefaults = userDefaults
     }
 
     /// Fetches the status if allowed to fetch. Only one fetch per day takes place.
     public func updateStatusIfNeeded() {
         guard allowedToFetch() else { return }
+        lastFetch = Date()
         cancellable = fetcher.fetch { result in
             guard let status = try? result.get() else {
                 return
